@@ -1,0 +1,6 @@
+{
+  "name": "grok-mcmc-survival-engine",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test" }
+}
