@@ -11,3 +11,10 @@ Run the focused regression suite with:
 ```bash
 npm test
 ```
+
+## Semantic architecture analysis
+
+The repository's APEX archive and MCMC survival engine are currently treated as
+independent product roots. The proposed APEX-only shared semantic substrate,
+typed verdict model, constraint graph, and eliminable policy choices are
+documented in [APEX Minimal-Kernel Boundary](docs/semantic/minimal-kernel-boundary.md).
