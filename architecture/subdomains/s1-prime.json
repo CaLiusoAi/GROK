@@ -1,0 +1,35 @@
+{
+  "id": "S1-prime-phi01-v1",
+  "parent": "S1",
+  "kind": "predicate-defined-subdomain",
+  "membershipPredicate": "src/s1Prime.js#validateS1Prime",
+  "closedWorld": true,
+  "requiredShape": {
+    "root": ["schema", "decisionModel", "time", "risk", "regimeObservation", "disciplineDecay", "edgeDecay", "adversarialInjection"],
+    "time": ["sourceUnit", "targetUnit", "relation", "horizonBars", "tradesPerBar"],
+    "risk": ["unit", "value"]
+  },
+  "constants": {
+    "schema": "apex-strategy-semantics/v1",
+    "decisionModel": "mcmc-survival-v1",
+    "time.sourceUnit": "bar",
+    "time.targetUnit": "day",
+    "time.relation": "one-bar-equals-one-day",
+    "risk.unit": "fraction-of-current-capital"
+  },
+  "enums": {
+    "regimeObservation": ["current-true-regime", "lagged-classifier"]
+  },
+  "ranges": {
+    "time.horizonBars": { "type": "integer", "minimum": 0 },
+    "time.tradesPerBar": { "type": "integer", "minimum": 0 },
+    "risk.value": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "booleans": ["disciplineDecay", "edgeDecay", "adversarialInjection"],
+  "exclusions": [
+    "Pine source text",
+    "undeclared fields",
+    "intrabar-to-day aggregation",
+    "decision models other than mcmc-survival-v1"
+  ]
+}

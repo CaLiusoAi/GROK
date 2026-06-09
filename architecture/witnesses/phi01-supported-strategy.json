@@ -1,0 +1,19 @@
+{
+  "schema": "apex-strategy-semantics/v1",
+  "decisionModel": "mcmc-survival-v1",
+  "time": {
+    "sourceUnit": "bar",
+    "targetUnit": "day",
+    "relation": "one-bar-equals-one-day",
+    "horizonBars": 3,
+    "tradesPerBar": 0
+  },
+  "risk": {
+    "unit": "fraction-of-current-capital",
+    "value": 0.01
+  },
+  "regimeObservation": "current-true-regime",
+  "disciplineDecay": true,
+  "edgeDecay": false,
+  "adversarialInjection": false
+}

@@ -1,0 +1,24 @@
+{
+  "theorem": "C11 = Id(S1_prime)",
+  "classification": "proof-input-evolution-calculus",
+  "analyzer": "src/c11Evolution.js#analyzeC11Evolution",
+  "witness": "test/c11Evolution.test.js",
+  "categories": {
+    "theorem-preserving": "Proof inputs are unchanged and the current proof remains established.",
+    "theorem-requiring-reproof": "Proof inputs changed and the evolved proof obligations are satisfied.",
+    "theorem-breaking": "The evolved proof obligations are not satisfied."
+  },
+  "declaredScenarios": [
+    "metadata-only change",
+    "coordinated Boolean field expansion",
+    "coordinated constant/schema version change",
+    "uncoordinated range change",
+    "mapping removal"
+  ],
+  "nonClaims": [
+    "all possible repository changes are classified",
+    "theorem-requiring-reproof changes preserve application behavior",
+    "metadata outside proof inputs is operationally irrelevant",
+    "formal verification of migration correctness"
+  ]
+}

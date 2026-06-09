@@ -1,0 +1,16 @@
+{
+  "morphism": "phi_01",
+  "question": "Does repeated phi_01 iteration admit a well-defined limit operator?",
+  "classification": "direct-not-iterable-witnessed-return-cycle",
+  "analyzer": "src/morphismIteration.js#analyzeMorphismIteration",
+  "witness": "test/morphismIteration.test.js",
+  "directIterationDefined": false,
+  "witnessedReturnMorphism": "phi_10",
+  "witnessedComposite": "phi_10_after_phi_01",
+  "limitOperatorDefined": false,
+  "nonClaims": [
+    "direct phi_01 iteration",
+    "convergence beyond the witnessed identity composite",
+    "kernel emergence from the scoped cycle"
+  ]
+}

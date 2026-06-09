@@ -1,0 +1,9 @@
+{
+  "nDays": 3,
+  "tradesPerDay": 0,
+  "riskPerTrade": 0.01,
+  "useClassifier": false,
+  "disciplineDecay": true,
+  "useEdgeDecay": false,
+  "adversarialInjection": false
+}

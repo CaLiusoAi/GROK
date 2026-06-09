@@ -2,5 +2,15 @@
   "name": "grok-mcmc-survival-engine",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test" }
+  "scripts": {
+    "test": "node --test",
+    "stability:s1-prime": "node scripts/reportS1PrimeStability.js",
+    "iteration:phi01": "node scripts/reportPhi01Iteration.js",
+    "fixed-points:c11": "node scripts/reportC11FixedPoints.js",
+    "characterize:c11": "node scripts/reportC11Characterization.js",
+    "prove:c11-identity": "node scripts/reportC11IdentityProof.js",
+    "impact:c11-identity": "node scripts/reportC11ChangeImpact.js",
+    "evolution:c11": "node scripts/reportC11Evolution.js",
+    "governance:theorems": "node scripts/reportTheoremGovernance.js"
+  }
 }

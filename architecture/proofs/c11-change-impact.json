@@ -1,0 +1,23 @@
+{
+  "theorem": "C11 = Id(S1_prime)",
+  "classification": "mutation-based-proof-obligation-impact-analysis",
+  "analyzer": "src/c11ChangeImpact.js#analyzeC11ChangeImpact",
+  "witness": "test/c11ChangeImpact.test.js",
+  "mutationClasses": [
+    "S1 schema expansion",
+    "S0 schema expansion",
+    "copied-field range change",
+    "constant change",
+    "mapping removal",
+    "mapping reference outside domain",
+    "codec extension without target widening",
+    "codec collision"
+  ],
+  "successMeaning": "Every declared incompatible mutation invalidates at least one structural identity proof obligation.",
+  "nonClaims": [
+    "all possible repository changes are enumerated",
+    "all compatible migrations preserve application behavior",
+    "formal verification of change detection",
+    "identity on parent domains"
+  ]
+}

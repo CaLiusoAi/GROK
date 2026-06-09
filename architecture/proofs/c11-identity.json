@@ -1,0 +1,26 @@
+{
+  "theorem": "C11 = Id(S1_prime)",
+  "scope": "current closed-world S1_prime and S0_prime schemas and current scoped adapters",
+  "proofChecker": "src/c11IdentityProof.js#proveC11Identity",
+  "mappingDefinition": "src/scopedBijection.js",
+  "witness": "test/c11IdentityProof.test.js",
+  "obligations": [
+    "every S1_prime leaf is reconstructed as a fixed constant, exact copy, or finite bijective codec",
+    "every S0_prime leaf is produced by the scoped mapping",
+    "copied fields preserve identical range or Boolean domains",
+    "the observation codec is bijective over its complete finite domain",
+    "closed-world validators exclude unaccounted fields"
+  ],
+  "consequences": [
+    "Fix(C11) = S1_prime under the current schemas",
+    "every C11 orbit is constant after zero applications",
+    "C11 is idempotent"
+  ],
+  "nonClaims": [
+    "identity after schema or adapter changes",
+    "identity on parent domain S1",
+    "full APEX-to-MCMC integration",
+    "repository kernel emergence",
+    "formal verification of the JavaScript runtime"
+  ]
+}

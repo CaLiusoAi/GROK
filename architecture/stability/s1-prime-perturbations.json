@@ -1,0 +1,20 @@
+{
+  "subject": "architecture/witnesses/phi01-supported-strategy.json",
+  "operator": "src/s1PrimeStability.js#admissibilityOperator",
+  "classification": "sampled-local-stability",
+  "perturbations": [
+    { "id": "horizon-increase", "path": "time.horizonBars", "value": 4, "expectedAdmitted": true },
+    { "id": "risk-lower-bound", "path": "risk.value", "value": 0, "expectedAdmitted": true },
+    { "id": "risk-upper-bound", "path": "risk.value", "value": 1, "expectedAdmitted": true },
+    { "id": "classifier-mode", "path": "regimeObservation", "value": "lagged-classifier", "expectedAdmitted": true },
+    { "id": "unsupported-schema", "path": "schema", "value": "apex-strategy-semantics/v2", "expectedAdmitted": false },
+    { "id": "risk-overflow", "path": "risk.value", "value": 1.01, "expectedAdmitted": false },
+    { "id": "invalid-time-relation", "path": "time.relation", "value": "one-bar-equals-one-hour", "expectedAdmitted": false },
+    { "id": "undeclared-root-field", "path": "pineSource", "value": "strategy('x')", "expectedAdmitted": false }
+  ],
+  "unmeasured": [
+    "closure under APEX generation because no S1 generator targets S1_prime",
+    "global maximality of S1_prime inside S1",
+    "long-run distributional stability of projected MCMC paths"
+  ]
+}

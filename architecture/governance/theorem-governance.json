@@ -1,0 +1,32 @@
+{
+  "classification": "generic-version-scoped-theorem-governance-protocol",
+  "validator": "src/theoremGovernance.js#validateTheoremGovernance",
+  "classifier": "src/theoremGovernance.js#classifyTheoremEvolution",
+  "reporter": "src/theoremGovernance.js#reportTheoremGovernance",
+  "witness": "test/theoremGovernance.test.js",
+  "categories": {
+    "theorem-preserving": "The complete theorem-specific proof-input state is unchanged and the theorem-specific proof remains established.",
+    "theorem-requiring-reproof": "The theorem-specific proof-input state changed and the theorem-specific proof succeeds for the evolved state; the old theorem is not inherited.",
+    "theorem-breaking": "The theorem-specific proof fails for the evolved state."
+  },
+  "registeredTheorems": [
+    "C11"
+  ],
+  "registrationRequirements": [
+    "a version-scoped theorem claim",
+    "a theorem-specific proof checker",
+    "a declared complete theorem-specific proof-input state constructor",
+    "a bounded evolution calculus with explicit non-claims",
+    "an executable governance witness"
+  ],
+  "nonClaims": [
+    "generic governance proves registered theorems",
+    "unregistered theorems are governed",
+    "all repository claims are theorems",
+    "all possible repository changes are classified",
+    "reproven theorems preserve application behavior",
+    "migration correctness",
+    "proof-input constructors are complete",
+    "repository-wide theorem governance"
+  ]
+}

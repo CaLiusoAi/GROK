@@ -1,0 +1,31 @@
+{
+  "operator": "C11",
+  "definition": "src/scopedComposites.js#composeC11",
+  "domain": "S1_prime",
+  "construction": [
+    "phi_01",
+    "phi_10"
+  ],
+  "status": "sampled-fixed-points-no-counterexample-in-finite-basis",
+  "subjects": [
+    "architecture/witnesses/phi01-supported-strategy.json"
+  ],
+  "analyzer": "src/scopedComposites.js#analyzeSampledFixedPoint",
+  "witness": "test/scopedComposites.test.js",
+  "claims": [
+    "C11 is an executable endomorphism on declared S1_prime inputs",
+    "tested subjects are fixed after one C11 application",
+    "tested finite C11 orbits are constant",
+    "no non-fixed subject was found in the declared finite factorial basis"
+  ],
+  "nonClaims": [
+    "all S1_prime subjects are fixed points",
+    "global convergence",
+    "attractor existence",
+    "maximality of S1_prime",
+    "kernel emergence",
+    "no non-fixed S1_prime member exists",
+    "formal proof"
+  ],
+  "characterizationPlan": "architecture/fixed-points/c11-characterization-plan.json"
+}

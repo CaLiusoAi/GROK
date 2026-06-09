@@ -1,0 +1,15 @@
+{
+  "id": "S0-prime-phi01-image-v1",
+  "parent": "S0",
+  "kind": "predicate-defined-subdomain",
+  "membershipPredicate": "src/s0Prime.js#validateS0Prime",
+  "closedWorld": true,
+  "requiredShape": ["nDays", "tradesPerDay", "riskPerTrade", "useClassifier", "disciplineDecay", "useEdgeDecay", "adversarialInjection"],
+  "ranges": {
+    "nDays": { "type": "integer", "minimum": 0 },
+    "tradesPerDay": { "type": "integer", "minimum": 0 },
+    "riskPerTrade": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "booleans": ["useClassifier", "disciplineDecay", "useEdgeDecay", "adversarialInjection"],
+  "exclusions": ["runtime results", "random functions", "callbacks", "undeclared simulatePath options"]
+}

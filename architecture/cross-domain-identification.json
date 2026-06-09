@@ -1,0 +1,271 @@
+{
+  "version": 11,
+  "domains": {
+    "S0": {
+      "name": "MCMC runtime",
+      "category": "stochastic-runtime",
+      "subjects": [
+        "src/mcmcSurvivalEngine.js"
+      ],
+      "observations": [
+        "test/mcmcSurvivalEngine.test.js"
+      ]
+    },
+    "S1": {
+      "name": "APEX Pine factory",
+      "category": "program-generation",
+      "subjects": [
+        "APEX_PINE_V6_LLM_FACTORY.zip",
+        "architecture/witnesses/phi01-supported-strategy.json"
+      ],
+      "observations": []
+    },
+    "S2": {
+      "name": "APEX admissibility specification",
+      "category": "logical-policy",
+      "subjects": [
+        "docs/semantic/apex-admissibility-boundary.md"
+      ],
+      "observations": []
+    }
+  },
+  "morphisms": {
+    "phi_12": {
+      "source": "S2",
+      "target": "S1",
+      "status": "unimplemented",
+      "requiredAdapter": "A machine-readable compiler from admissibility constraints to APEX factory profiles",
+      "requiredPreservation": [
+        "constraint identity",
+        "authority qualification",
+        "verdict separation"
+      ],
+      "witnesses": []
+    },
+    "phi_01": {
+      "source": "S1_prime",
+      "target": "S0_prime",
+      "status": "witnessed-partial",
+      "requiredAdapter": "A translation from generated Pine strategy semantics to simulatePath configuration and observations",
+      "requiredPreservation": [
+        "strategy decision semantics",
+        "risk semantics",
+        "time-step semantics"
+      ],
+      "witnesses": [
+        "test/phi01StrategyAdapter.test.js",
+        "test/s1Prime.test.js"
+      ],
+      "adapter": "src/phi01StrategyAdapter.js",
+      "witnessedScope": {
+        "sourceSubject": "architecture/witnesses/phi01-supported-strategy.json",
+        "targetOperation": "simulatePath(config)",
+        "limitations": [
+          "semantic manifest input only; no Pine source parser",
+          "mcmc-survival-v1 decision model only",
+          "one-bar-equals-one-day time relation only"
+        ],
+        "sourceSubdomain": "S1_prime",
+        "sourceDefinition": "architecture/subdomains/s1-prime.json",
+        "targetSubdomain": "S0_prime",
+        "targetDefinition": "architecture/subdomains/s0-prime.json"
+      }
+    },
+    "phi_02": {
+      "source": "S2",
+      "target": "S0",
+      "status": "unimplemented",
+      "requiredAdapter": "A runtime property compiler from admissibility constraints to executable MCMC assertions",
+      "requiredPreservation": [
+        "constraint identity",
+        "evidence provenance",
+        "runtime verdict meaning"
+      ],
+      "witnesses": []
+    },
+    "phi_10": {
+      "source": "S0_prime",
+      "target": "S1_prime",
+      "status": "witnessed-partial",
+      "requiredAdapter": "A return translation from the exact phi_01 configuration image to S1_prime",
+      "requiredPreservation": [
+        "strategy decision semantics",
+        "risk semantics",
+        "time-step semantics"
+      ],
+      "witnesses": [
+        "test/phi10SimulationAdapter.test.js"
+      ],
+      "adapter": "src/phi10SimulationAdapter.js",
+      "witnessedScope": {
+        "sourceSubject": "architecture/witnesses/phi10-supported-config.json",
+        "targetOperation": "adaptSimulationToApexStrategy(config)",
+        "limitations": [
+          "S0_prime configuration image only; not runtime results",
+          "no callbacks or random functions",
+          "no undeclared simulatePath options"
+        ],
+        "sourceSubdomain": "S0_prime",
+        "sourceDefinition": "architecture/subdomains/s0-prime.json",
+        "targetSubdomain": "S1_prime",
+        "targetDefinition": "architecture/subdomains/s1-prime.json"
+      }
+    }
+  },
+  "commutativityClaims": [],
+  "subdomains": {
+    "S1_prime": {
+      "parent": "S1",
+      "definition": "architecture/subdomains/s1-prime.json",
+      "membershipPredicate": "src/s1Prime.js#validateS1Prime",
+      "stability": {
+        "status": "sampled-local-stable",
+        "plan": "architecture/stability/s1-prime-perturbations.json",
+        "analyzer": "src/s1PrimeStability.js#analyzeS1PrimeStability",
+        "witness": "test/s1PrimeStability.test.js",
+        "claims": [
+          "admissibility operator idempotence on tested subjects",
+          "declared perturbation expectations",
+          "sensitivity to tested tightening and schema evolution"
+        ],
+        "nonClaims": [
+          "closure under APEX generation",
+          "global maximality",
+          "runtime distributional stability"
+        ]
+      }
+    },
+    "S0_prime": {
+      "parent": "S0",
+      "definition": "architecture/subdomains/s0-prime.json",
+      "membershipPredicate": "src/s0Prime.js#validateS0Prime"
+    }
+  },
+  "iterationClaims": {
+    "phi_01": {
+      "status": "direct-not-iterable-witnessed-return-cycle",
+      "definition": "architecture/limits/phi01-iteration.json",
+      "analyzer": "src/morphismIteration.js#analyzeMorphismIteration",
+      "witness": "test/morphismIteration.test.js",
+      "returnMorphism": "phi_10",
+      "limitOperatorDefined": false
+    }
+  },
+  "compositionClaims": {
+    "phi_10_after_phi_01": {
+      "path": [
+        "phi_01",
+        "phi_10"
+      ],
+      "source": "S1_prime",
+      "target": "S1_prime",
+      "status": "machine-checked-identity-current-schema",
+      "witness": "test/phi10SimulationAdapter.test.js",
+      "nonClaims": [
+        "global APEX-to-MCMC integration",
+        "convergence outside S1_prime"
+      ],
+      "operator": "src/scopedComposites.js#composeC11",
+      "proof": "architecture/proofs/c11-identity.json"
+    },
+    "phi_01_after_phi_10": {
+      "path": [
+        "phi_10",
+        "phi_01"
+      ],
+      "source": "S0_prime",
+      "target": "S0_prime",
+      "status": "witnessed-round-trip",
+      "witness": "test/phi10SimulationAdapter.test.js",
+      "nonClaims": [
+        "identity for every S0_prime subject",
+        "reconstruction from MCMC runtime results"
+      ],
+      "operator": "src/scopedComposites.js#composeC00"
+    }
+  },
+  "fixedPointClaims": {
+    "C11": {
+      "status": "machine-checked-structural-identity-current-schema",
+      "definition": "architecture/proofs/c11-identity.json",
+      "operator": "src/scopedComposites.js#composeC11",
+      "proofChecker": "src/c11IdentityProof.js#proveC11Identity",
+      "witness": "test/c11IdentityProof.test.js",
+      "consequences": [
+        "Fix(C11) equals S1_prime under current schemas",
+        "every C11 orbit is constant",
+        "C11 is idempotent"
+      ],
+      "supportingEvidence": [
+        "architecture/fixed-points/c11-sampled-analysis.json",
+        "architecture/fixed-points/c11-characterization-plan.json"
+      ],
+      "nonClaims": [
+        "identity after schema or adapter changes",
+        "identity on parent domain S1",
+        "full APEX-to-MCMC integration",
+        "repository kernel emergence",
+        "formal verification of the JavaScript runtime"
+      ],
+      "changeImpact": {
+        "status": "declared-incompatible-mutations-detected",
+        "definition": "architecture/proofs/c11-change-impact.json",
+        "analyzer": "src/c11ChangeImpact.js#analyzeC11ChangeImpact",
+        "witness": "test/c11ChangeImpact.test.js",
+        "nonClaims": [
+          "all possible repository changes are enumerated",
+          "all compatible migrations preserve application behavior",
+          "formal verification of change detection"
+        ]
+      },
+      "evolutionCalculus": {
+        "status": "declared-evolutions-classified",
+        "definition": "architecture/evolution/c11-evolution-calculus.json",
+        "analyzer": "src/c11Evolution.js#analyzeC11Evolution",
+        "witness": "test/c11Evolution.test.js",
+        "categories": [
+          "theorem-preserving",
+          "theorem-requiring-reproof",
+          "theorem-breaking"
+        ],
+        "nonClaims": [
+          "all possible repository changes are classified",
+          "theorem-requiring-reproof changes preserve application behavior",
+          "formal verification of migration correctness"
+        ]
+      },
+      "proofState": "src/c11Evolution.js#currentC11ProofState",
+      "governanceWitness": "test/theoremGovernance.test.js"
+    }
+  },
+  "theoremGovernance": {
+    "status": "generic-protocol-c11-only",
+    "definition": "architecture/governance/theorem-governance.json",
+    "validator": "src/theoremGovernance.js#validateTheoremGovernance",
+    "classifier": "src/theoremGovernance.js#classifyTheoremEvolution",
+    "reporter": "src/theoremGovernance.js#reportTheoremGovernance",
+    "witness": "test/theoremGovernance.test.js",
+    "registeredTheorems": [
+      "C11"
+    ],
+    "nonClaims": [
+      "generic governance proves registered theorems",
+      "unregistered theorems are governed",
+      "all possible repository changes are classified",
+      "repository-wide theorem governance",
+      "proof-input constructors are complete"
+    ],
+    "categories": {
+      "theorem-preserving": "The complete theorem-specific proof-input state is unchanged and the theorem-specific proof remains established.",
+      "theorem-requiring-reproof": "The theorem-specific proof-input state changed and the theorem-specific proof succeeds for the evolved state; the old theorem is not inherited.",
+      "theorem-breaking": "The theorem-specific proof fails for the evolved state."
+    },
+    "registrationRequirements": [
+      "a version-scoped theorem claim",
+      "a theorem-specific proof checker",
+      "a declared complete theorem-specific proof-input state constructor",
+      "a bounded evolution calculus with explicit non-claims",
+      "an executable governance witness"
+    ]
+  }
+}
