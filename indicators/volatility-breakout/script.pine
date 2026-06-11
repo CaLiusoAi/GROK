@@ -12,11 +12,11 @@ indicator("Master-Edition Volatility Breakout", overlay=true, timeframe="", time
 int basisLen   = input.int(20, "Basis Length (EMA)", minval=1)
 float mult     = input.float(2.0, "ATR Multiplier", minval=0.1, step=0.1)
 int atrLen     = input.int(20, "ATR Length", minval=1)
-string srcName = input.source(close, "Source")
+float src = input.source(close, "Source")
 
 // --- CALCULATIONS (RHO Protective Bias) ---
 // Explicit types and nz() guarding
-float basis = ta.ema(srcName, basisLen)
+float basis = ta.ema(src, basisLen)
 float atr   = ta.atr(atrLen)
 float upper = basis + (mult * atr)
 float lower = basis - (mult * atr)
