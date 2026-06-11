@@ -1,0 +1,67 @@
+//@version=6
+// Φ_SEED DECOMPOSITION
+// - CORE OBJECTIVE: Identify regular bullish and bearish RSI divergences.
+// - TIME HORIZON: Swing / Day Trading.
+// - HARD INVARIANTS: v6, No repaint (signals appear on confirmation), Explicit types.
+// - KEY VARIABLES: RSI (14), Pivot Lookleft (5), Pivot Lookright (5).
+// - AMBIGUITY FLAGS: Pivot confirmation delay (Lookright) is inevitable for no-repaint logic.
+
+indicator("Master-Edition RSI Divergence", overlay=true, timeframe="", timeframe_gaps=true, max_labels_count=500)
+
+// --- INPUTS ---
+int rsiLen      = input.int(14, "RSI Length", minval=1)
+int pivotLeft   = input.int(5,  "Pivot Lookleft", minval=1)
+int pivotRight  = input.int(5,  "Pivot Lookright", minval=1)
+float rsiUpper  = input.float(70.0, "RSI Upper Bound", minval=50.0)
+float rsiLower  = input.float(30.0, "RSI Lower Bound", maxval=50.0)
+
+// --- CALCULATIONS ---
+float rsiVal = ta.rsi(close, rsiLen)
+// Buffer protection
+// max_bars_back(rsiVal, 500) // This is redundant as ta.rsi handles buffering, but good to know.
+
+// Pivot detection (returns price at pivot or na)
+// These functions require series context (ta.*)
+float pTop = ta.pivothigh(rsiVal, pivotLeft, pivotRight)
+float pBot = ta.pivotlow(rsiVal, pivotLeft, pivotRight)
+
+// Store historical pivot values and prices
+var float topRsi    = na
+var float topPrice  = na
+var float botRsi    = na
+var float botPrice  = na
+
+if not na(pTop)
+    topRsi   := rsiVal[pivotRight]
+    topPrice := high[pivotRight]
+
+if not na(pBot)
+    botRsi   := rsiVal[pivotRight]
+    botPrice := low[pivotRight]
+
+// --- DIVERGENCE LOGIC (RHO Protective Bias) ---
+// Regular Bearish: Higher High in Price, Lower High in RSI
+bool bearDiv = not na(pTop) and high[pivotRight] > topPrice[1] and rsiVal[pivotRight] < topRsi[1] and rsiVal[pivotRight] > rsiUpper
+
+// Regular Bullish: Lower Low in Price, Higher Low in RSI
+bool bullDiv = not na(pBot) and low[pivotRight] < botPrice[1] and rsiVal[pivotRight] > botRsi[1] and rsiVal[pivotRight] < rsiLower
+
+// --- PLOTTING ---
+// Plotting on current bar (offset by pivotRight to align with the actual peak/trough visually)
+// Note: This is purely visual; the logic triggered 'now' is based on the confirmation bar.
+plotshape(bullDiv, style=shape.triangleup,   location=location.belowbar, color=color.green, size=size.small, title="Bullish Divergence", offset=-pivotRight)
+plotshape(bearDiv, style=shape.triangledown, location=location.abovebar, color=color.red,   size=size.small, title="Bearish Divergence", offset=-pivotRight)
+
+// Visualizing RSI on a separate pane is common, but for 'overlay=true' we just show signals.
+// We can use labels for more detail.
+if bullDiv
+    label.new(bar_index[pivotRight], low[pivotRight], "Bull Div", style=label.style_label_up, color=color.green, textcolor=color.white)
+
+if bearDiv
+    label.new(bar_index[pivotRight], high[pivotRight], "Bear Div", style=label.style_label_down, color=color.red, textcolor=color.white)
+
+// --- ALERTS ---
+if bullDiv
+    alert("Bullish RSI Divergence confirmed on " + syminfo.ticker, alert.freq_once_per_bar)
+if bearDiv
+    alert("Bearish RSI Divergence confirmed on " + syminfo.ticker, alert.freq_once_per_bar)
