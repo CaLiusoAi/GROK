@@ -6,7 +6,7 @@
 // - KEY VARIABLES: RSI (14), Pivot Lookleft (5), Pivot Lookright (5).
 // - AMBIGUITY FLAGS: Pivot confirmation delay (Lookright) is inevitable for no-repaint logic.
 
-indicator("Master-Edition RSI Divergence", overlay=true, timeframe="", timeframe_gaps=true)
+indicator("Master-Edition RSI Divergence", overlay=true, timeframe="", timeframe_gaps=true, max_labels_count=500)
 
 // --- INPUTS ---
 int rsiLen      = input.int(14, "RSI Length", minval=1)
@@ -17,6 +17,8 @@ float rsiLower  = input.float(30.0, "RSI Lower Bound", maxval=50.0)
 
 // --- CALCULATIONS ---
 float rsiVal = ta.rsi(close, rsiLen)
+// Buffer protection
+// max_bars_back(rsiVal, 500) // This is redundant as ta.rsi handles buffering, but good to know.
 
 // Pivot detection (returns price at pivot or na)
 // These functions require series context (ta.*)
