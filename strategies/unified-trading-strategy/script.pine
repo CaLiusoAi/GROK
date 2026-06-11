@@ -1,0 +1,85 @@
+//@version=6
+// Φ_SEED DECOMPOSITION
+// - CORE OBJECTIVE: Unified trading strategy combining SMA Trend, RSI Divergence, and Volatility Breakouts.
+// - TIME HORIZON: Swing / Intraday.
+// - HARD INVARIANTS: v6, No repaint, strict typing, 100% audit pass.
+// - KEY VARIABLES: Fast/Slow SMA, RSI, ATR/Keltner, Risk-per-trade %.
+// - AMBIGUITY FLAGS: Signal priority: Divergence (Reversal) > Breakout (Momentum) > Trend (Continuation).
+
+strategy("Master-Edition Unified Strategy", overlay=true, timeframe="", timeframe_gaps=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10, max_labels_count=500)
+
+// --- INPUTS ---
+// Trend (SMA)
+int fastSmaLen = input.int(20, "Fast SMA Length", group="Trend", minval=1)
+int slowSmaLen = input.int(50, "Slow SMA Length", group="Trend", minval=1)
+// Momentum (RSI)
+int rsiLen      = input.int(14, "RSI Length", group="Momentum", minval=1)
+int pivotLeft   = input.int(5,  "Pivot Lookleft", group="Momentum", minval=1)
+int pivotRight  = input.int(5,  "Pivot Lookright", group="Momentum", minval=1)
+// Volatility (Keltner)
+int basisLen   = input.int(20, "Keltner Basis Length", group="Volatility", minval=1)
+float mult     = input.float(2.0, "ATR Multiplier", group="Volatility", minval=0.1)
+int atrLen     = input.int(20, "ATR Length", group="Volatility", minval=1)
+// Risk Management
+float riskPerc = input.float(1.0, "Risk Per Trade (%)", group="Risk", minval=0.1, maxval=10.0)
+float slAtrMult = input.float(2.0, "Stop Loss ATR Mult", group="Risk", minval=1.0)
+
+// --- CALCULATIONS ---
+// 1. Trend
+float fastSma = ta.sma(close, fastSmaLen)
+float slowSma = ta.sma(close, slowSmaLen)
+bool isTrendUp   = fastSma > slowSma
+bool isTrendDown = fastSma < slowSma
+
+// 2. Momentum (Divergence)
+float rsiVal = ta.rsi(close, rsiLen)
+float pTop = ta.pivothigh(rsiVal, pivotLeft, pivotRight)
+float pBot = ta.pivotlow(rsiVal, pivotLeft, pivotRight)
+var float topPrice  = na
+var float topRsi    = na
+var float botPrice  = na
+var float botRsi    = na
+if not na(pTop)
+    topPrice := high[pivotRight], topRsi := rsiVal[pivotRight]
+if not na(pBot)
+    botPrice := low[pivotRight], botRsi := rsiVal[pivotRight]
+bool bullDiv = not na(pBot) and low[pivotRight] < botPrice[1] and rsiVal[pivotRight] > botRsi[1]
+bool bearDiv = not na(pTop) and high[pivotRight] > topPrice[1] and rsiVal[pivotRight] < topRsi[1]
+
+// 3. Volatility (Breakout)
+float basis = ta.ema(close, basisLen)
+float atr   = ta.atr(atrLen)
+float upper = basis + (mult * atr)
+float lower = basis - (mult * atr)
+bool bullBreak = ta.crossover(close, upper)
+bool bearBreak = ta.crossunder(close, lower)
+
+// --- POSITION SIZING & RISK ---
+float stopLossDist = atr * slAtrMult
+// Calculate position size based on risk percentage and stop loss distance
+// Qty = (Equity * Risk%) / SL_Distance
+float riskAmount = strategy.equity * (riskPerc / 100)
+float posSize = riskAmount / stopLossDist
+
+// --- ENTRY LOGIC ---
+// Consensus: Trend Alignment + (Breakout OR Divergence)
+bool longEntry  = isTrendUp   and (bullBreak or bullDiv)
+bool shortEntry = isTrendDown and (bearBreak or bearDiv)
+
+if longEntry
+    strategy.entry("Long", strategy.long, qty=posSize, comment="Trend+Momentum")
+    strategy.exit("Exit Long", "Long", stop=close - stopLossDist, limit=close + (stopLossDist * 2))
+
+if shortEntry
+    strategy.entry("Short", strategy.short, qty=posSize, comment="Trend+Momentum")
+    strategy.exit("Exit Short", "Short", stop=close + stopLossDist, limit=close - (stopLossDist * 2))
+
+// --- PLOTTING ---
+plot(fastSma, color=color.blue, title="Fast SMA")
+plot(slowSma, color=color.gray, title="Slow SMA")
+p_up = plot(upper, color=color.new(color.blue, 50), title="Keltner Upper")
+p_dn = plot(lower, color=color.new(color.blue, 50), title="Keltner Lower")
+fill(p_up, p_dn, color=color.new(color.blue, 95))
+
+plotshape(bullDiv, "Bull Div", shape.triangleup, location.belowbar, color.green, offset=-pivotRight)
+plotshape(bearDiv, "Bear Div", shape.triangledown, location.abovebar, color.red, offset=-pivotRight)
