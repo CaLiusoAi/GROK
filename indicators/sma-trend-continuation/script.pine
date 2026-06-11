@@ -1,0 +1,42 @@
+//@version=6
+// Φ_SEED DECOMPOSITION
+// - CORE OBJECTIVE: Identify trend continuation opportunities via SMA pullbacks.
+// - TIME HORIZON: Scalping/Intraday.
+// - HARD INVARIANTS: v6 only, No repaint, Explicit types.
+// - KEY VARIABLES: Fast SMA (20), Slow SMA (50), ADX (14).
+// - AMBIGUITY FLAGS: Gaps handled via nz(), Volume not filtered.
+
+indicator("Master-Edition SMA Trend Continuation", overlay=true, timeframe="", timeframe_gaps=true)
+
+// --- INPUTS ---
+int fastSmaLen = input.int(20, "Fast SMA Length", minval=1)
+int slowSmaLen = input.int(50, "Slow SMA Length", minval=1)
+int adxLen     = input.int(14, "ADX Length", minval=1)
+int adxThresh  = input.int(25, "ADX Threshold", minval=1)
+
+// --- CALCULATIONS ---
+float fastSma = ta.sma(close, fastSmaLen)
+float slowSma = ta.sma(close, slowSmaLen)
+
+// ADX Calculation for trend strength
+[plusDI, minusDI, adxValue] = ta.dmi(adxLen, adxLen)
+
+// --- TREND LOGIC (RHO Protective Bias) ---
+bool isTrendUp   = fastSma > slowSma and ta.rising(fastSma, 3) and adxValue > adxThresh
+bool isTrendDown = fastSma < slowSma and ta.falling(fastSma, 3) and adxValue > adxThresh
+
+// --- SIGNAL LOGIC (Pullback) ---
+// Long: High was above SMA, Low is now below/at SMA, while trend is up.
+bool longSignal  = isTrendUp   and low <= fastSma and high > fastSma
+bool shortSignal = isTrendDown and high >= fastSma and low < fastSma
+
+// --- PLOTTING ---
+plot(fastSma, "Fast SMA", color=color.blue, linewidth=2)
+plot(slowSma, "Slow SMA", color=color.gray, linewidth=1)
+
+plotshape(longSignal,  style=shape.triangleup,   location=location.belowbar, color=color.green, size=size.small, title="Long Continuation")
+plotshape(shortSignal, style=shape.triangledown, location=location.abovebar, color=color.red,   size=size.small, title="Short Continuation")
+
+// --- ALERTS ---
+alertcondition(longSignal,  "Long Pullback",  "Trend continuation long signal")
+alertcondition(shortSignal, "Short Pullback", "Trend continuation short signal")
